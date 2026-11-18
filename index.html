@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบติดตามคิวบริการ - ธ.ก.ส.</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+        :root {
+
+            --baac-green: #006633;
+
+            --baac-light-green: #e6f2ec;
+
+            --baac-gold: #d4af37;
+
+            --text-dark: #1f2937;
+
+            --bg-gray: #f3f4f6;
+
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+
+        body { background-color: var(--bg-gray); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        header {
+
+            background: linear-gradient(135deg, var(--baac-green) 0%, #004d26 100%);
+
+            color: white;
+
+            padding: 18px 16px;
+
+            text-align: center;
+
+            border-bottom: 4px solid var(--baac-gold);
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+        }
+
+        header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; }
+
+        header p { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+
+        .container { max-width: 500px; width: 100%; margin: 0 auto; padding: 16px; flex: 1; }
+
+        .latest-card {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 24px 16px;
+
+            text-align: center;
+
+            box-shadow: 0 4px 15px rgba(0, 102, 51, 0.12);
+
+            border: 2px solid var(--baac-green);
+
+            margin-bottom: 20px;
+
+        }
+
+        .badge-live {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            background: #fee2e2;
+
+            color: #dc2626;
+
+            font-size: 0.75rem;
+
+            font-weight: 600;
+
+            padding: 4px 12px;
+
+            border-radius: 99px;
+
+            margin-bottom: 10px;
+
+        }
+
+        .dot { width: 8px; height: 8px; background: #dc2626; border-radius: 50%; animation: blink 1.2s infinite; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .latest-label { font-size: 1rem; color: #4b5563; font-weight: 600; }
+
+        .latest-number {
+
+            font-size: 2.5rem;
+
+            font-weight: 700;
+
+            color: var(--baac-green);
+
+            margin: 8px 0;
+
+            line-height: 1.2;
+
+        }
+
+        .update-time { font-size: 0.75rem; color: #9ca3af; }
+
+        .section-title { font-size: 0.95rem; font-weight: 600; color: #374151; margin-bottom: 10px; padding-left: 4px; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .cat-card {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 14px;
+
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+            border-left: 5px solid var(--baac-gold);
+
+        }
+
+        .cat-card.full { grid-column: span 2; }
+
+        .cat-name { font-size: 0.8rem; color: #6b7280; margin-bottom: 4px; }
+
+        .cat-val { font-size: 1.15rem; font-weight: 700; color: var(--text-dark); }
+
+        footer { text-align: center; padding: 14px; font-size: 0.75rem; color: #6b7280; }
+</style>
+</head>
+<body>
+<header>
+<h1>ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร</h1>
+<p>ระบบตรวจสอบคิวให้บริการออนไลน์ (Real-time)</p>
+</header>
+<div class="container">
+<div class="latest-card">
+<div class="badge-live"><span class="dot"></span> อัปเดตอัตโนมัติ</div>
+<div class="latest-label">หมายเลขคิวล่าสุดที่เรียก</div>
+<div class="latest-number" id="q-latest">กำลังโหลด...</div>
+<div class="update-time" id="last-sync">รอการเชื่อมต่อข้อมูล</div>
+</div>
+<div class="section-title">คิวล่าสุดแยกตามประเภทบริการ</div>
+<div class="grid">
+<div class="cat-card">
+<div class="cat-name">ประเภท 1</div>
+<div class="cat-val" id="q-cat1">-</div>
+</div>
+<div class="cat-card">
+<div class="cat-name">ประเภท 2</div>
+<div class="cat-val" id="q-cat2">-</div>
+</div>
+<div class="cat-card">
+<div class="cat-name">ประเภท 3</div>
+<div class="cat-val" id="q-cat3">-</div>
+</div>
+<div class="cat-card">
+<div class="cat-name">ประเภท 4</div>
+<div class="cat-val" id="q-cat4">-</div>
+</div>
+<div class="cat-card full">
+<div class="cat-name">ประเภท 5</div>
+<div class="cat-val" id="q-cat5">-</div>
+</div>
+</div>
+</div>
+<footer>
+
+    ข้อมูลอัปเดตทุกๆ 3 วินาที • กรุณารอเรียกคิวบริเวณจุดพักคอย
+</footer>
+<script>
+
+    const DATA_URL = "https://gist.githubusercontent.com/genonatdanai-png/c7387a2e824bc17bd768132f2f62c5c9/raw/queue_data.json";
+
+    function formatThai(text) {
+
+        if (!text || text === "-") return "-";
+
+        return text.replace("Counter", "ช่อง");
+
+    }
+
+    async function fetchQueueData() {
+
+        try {
+
+            const response = await fetch(DATA_URL + "?t=" + new Date().getTime(), { cache: "no-store" });
+
+            if (!response.ok) throw new Error("Network error");
+
+            const data = await response.json();
+
+            document.getElementById("q-latest").innerText = formatThai(data.Latest);
+
+            document.getElementById("q-cat1").innerText   = formatThai(data.Cat1);
+
+            document.getElementById("q-cat2").innerText   = formatThai(data.Cat2);
+
+            document.getElementById("q-cat3").innerText   = formatThai(data.Cat3);
+
+            document.getElementById("q-cat4").innerText   = formatThai(data.Cat4);
+
+            document.getElementById("q-cat5").innerText   = formatThai(data.Cat5);
+
+            const now = new Date().toLocaleTimeString('th-TH');
+
+            document.getElementById("last-sync").innerText = "อัปเดตล่าสุดเมื่อ: " + now + " น.";
+
+        } catch (err) {
+
+            document.getElementById("last-sync").innerText = "กำลังเชื่อมต่อข้อมูล...";
+
+        }
+
+    }
+
+    fetchQueueData();
+
+    setInterval(fetchQueueData, 3000);
+</script>
+</body>
+</html>
+ 

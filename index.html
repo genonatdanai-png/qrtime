@@ -1,233 +1,473 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบติดตามคิวบริการ - ธ.ก.ส.</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบติดตามคิวบริการ - ธ.ก.ส.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
         :root {
-
             --baac-green: #006633;
-
             --baac-light-green: #e6f2ec;
-
             --baac-gold: #d4af37;
-
             --text-dark: #1f2937;
-
             --bg-gray: #f3f4f6;
-
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
-
         body { background-color: var(--bg-gray); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
-
+        
         header {
-
             background: linear-gradient(135deg, var(--baac-green) 0%, #004d26 100%);
-
             color: white;
-
             padding: 18px 16px;
-
             text-align: center;
-
             border-bottom: 4px solid var(--baac-gold);
-
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-
         }
-
         header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; }
-
         header p { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
 
         .container { max-width: 500px; width: 100%; margin: 0 auto; padding: 16px; flex: 1; }
 
-        .latest-card {
-
+        /* กล่องกรอกเลขคิวของฉัน */
+        .my-queue-box {
             background: white;
-
             border-radius: 16px;
-
-            padding: 24px 16px;
-
-            text-align: center;
-
-            box-shadow: 0 4px 15px rgba(0, 102, 51, 0.12);
-
-            border: 2px solid var(--baac-green);
-
-            margin-bottom: 20px;
-
+            padding: 16px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+            border: 1.5px solid #d1d5db;
+            margin-bottom: 16px;
         }
-
-        .badge-live {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 6px;
-
-            background: #fee2e2;
-
-            color: #dc2626;
-
-            font-size: 0.75rem;
-
-            font-weight: 600;
-
-            padding: 4px 12px;
-
-            border-radius: 99px;
-
-            margin-bottom: 10px;
-
-        }
-
-        .dot { width: 8px; height: 8px; background: #dc2626; border-radius: 50%; animation: blink 1.2s infinite; }
-
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        .latest-label { font-size: 1rem; color: #4b5563; font-weight: 600; }
-
-        .latest-number {
-
-            font-size: 2.5rem;
-
+        .my-queue-title {
+            font-size: 0.9rem;
             font-weight: 700;
-
             color: var(--baac-green);
-
-            margin: 8px 0;
-
-            line-height: 1.2;
-
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .wake-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 2px 8px;
+            border-radius: 99px;
+        }
+        .wake-badge.active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 10px 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .input-group input:focus { border-color: var(--baac-green); }
+        .btn-save {
+            background: var(--baac-green);
+            color: white;
+            border: none;
+            padding: 0 18px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-clear {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 0 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+        }
+        .my-status {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+        .status-waiting { background: var(--baac-light-green); color: var(--baac-green); }
+        .status-near { background: #fef3c7; color: #b45309; border: 1.5px solid #f59e0b; animation: pulseAlert 1.5s infinite; }
+        .status-now { background: #dcfce7; color: #15803d; border: 2px solid #22c55e; font-size: 1.05rem; animation: pulseAlert 0.8s infinite; }
+        .status-passed { background: #fee2e2; color: #b91c1c; }
+        @keyframes pulseAlert { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 
-        .update-time { font-size: 0.75rem; color: #9ca3af; }
-
-        .section-title { font-size: 0.95rem; font-weight: 600; color: #374151; margin-bottom: 10px; padding-left: 4px; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        .cat-card {
-
+        /* กล่องคิวล่าสุด */
+        .latest-card {
             background: white;
-
-            border-radius: 12px;
-
-            padding: 14px;
-
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-
-            border-left: 5px solid var(--baac-gold);
-
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 102, 51, 0.12);
+            border: 2px solid var(--baac-green);
+            margin-bottom: 18px;
         }
+        .badge-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fee2e2;
+            color: #dc2626;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 99px;
+            margin-bottom: 8px;
+        }
+        .dot { width: 8px; height: 8px; background: #dc2626; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
+        .latest-label { font-size: 0.95rem; color: #4b5563; font-weight: 600; }
+        .latest-number {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--baac-green);
+            margin: 6px 0;
+            line-height: 1.2;
+        }
+        .update-time { font-size: 0.75rem; color: #6b7280; font-variant-numeric: tabular-nums; margin-top: 4px; }
+
+        /* การ์ดแยกประเภท */
+        .section-title { font-size: 0.95rem; font-weight: 600; color: #374151; margin-bottom: 10px; padding-left: 4px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+        .cat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--baac-gold);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
         .cat-card.full { grid-column: span 2; }
-
-        .cat-name { font-size: 0.8rem; color: #6b7280; margin-bottom: 4px; }
-
+        .cat-name { font-size: 0.8rem; color: #6b7280; font-weight: 600; margin-bottom: 4px; }
         .cat-val { font-size: 1.15rem; font-weight: 700; color: var(--text-dark); }
 
+        /* ประวัติย้อนหลัง 5 คิว */
+        .history-card {
+            background: white;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .history-list {
+            list-style: none;
+            margin-top: 8px;
+        }
+        .history-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.88rem;
+        }
+        .history-list li:last-child { border-bottom: none; padding-bottom: 0; }
+        .hist-q { font-weight: 700; color: var(--text-dark); }
+        .hist-time { font-size: 0.75rem; color: #9ca3af; }
+        .hist-empty { font-size: 0.85rem; color: #9ca3af; text-align: center; padding: 10px 0; }
+
         footer { text-align: center; padding: 14px; font-size: 0.75rem; color: #6b7280; }
-</style>
+    </style>
 </head>
 <body>
+
 <header>
-<h1>ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร</h1>
-<p>ระบบตรวจสอบคิวให้บริการออนไลน์ (Real-time)</p>
+    <h1>ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร</h1>
+    <p>ระบบตรวจสอบคิวให้บริการออนไลน์ (Real-time)</p>
 </header>
+
 <div class="container">
-<div class="latest-card">
-<div class="badge-live"><span class="dot"></span> อัปเดตอัตโนมัติ</div>
-<div class="latest-label">หมายเลขคิวล่าสุดที่เรียก</div>
-<div class="latest-number" id="q-latest">กำลังโหลด...</div>
-<div class="update-time" id="last-sync">รอการเชื่อมต่อข้อมูล</div>
+    <!-- ระบบกรอกเลขคิวของฉัน -->
+    <div class="my-queue-box">
+        <div class="my-queue-title">
+            <span>🔔 แจ้งเตือนคิวของฉัน</span>
+            <span class="wake-badge" id="wake-status">เปิดจอค้างไว้: อัตโนมัติ</span>
+        </div>
+        <div class="input-group">
+            <input type="tel" id="my-q-input" maxlength="4" placeholder="พิมพ์เลขคิว เช่น 2068">
+            <button class="btn-save" id="btn-save-q" onclick="saveMyQueue()">บันทึก</button>
+            <button class="btn-clear" id="btn-clear-q" onclick="clearMyQueue()">ยกเลิก</button>
+        </div>
+        <div class="my-status" id="my-q-status"></div>
+    </div>
+
+    <!-- คิวล่าสุด -->
+    <div class="latest-card">
+        <div class="badge-live"><span class="dot"></span> อัปเดตเรียลไทม์ (ทุกวินาที)</div>
+        <div class="latest-label">หมายเลขคิวล่าสุดที่เรียก</div>
+        <div class="latest-number" id="q-latest">กำลังโหลด...</div>
+        <div class="update-time" id="last-sync">รอการเชื่อมต่อข้อมูล</div>
+    </div>
+
+    <!-- คิวแยกประเภท -->
+    <div class="section-title">คิวล่าสุดแยกตามประเภทบริการ</div>
+    <div class="grid">
+        <div class="cat-card">
+            <div class="cat-name">ประเภท 1</div>
+            <div class="cat-val" id="q-cat1">-</div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-name">ประเภท 2</div>
+            <div class="cat-val" id="q-cat2">-</div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-name">ประเภท 3</div>
+            <div class="cat-val" id="q-cat3">-</div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-name">ประเภท 4</div>
+            <div class="cat-val" id="q-cat4">-</div>
+        </div>
+        <div class="cat-card full">
+            <div class="cat-name">ประเภท 5</div>
+            <div class="cat-val" id="q-cat5">-</div>
+        </div>
+    </div>
+
+    <!-- ประวัติการเรียกคิวย้อนหลัง 5 คิว -->
+    <div class="history-card">
+        <div class="section-title" style="margin-bottom: 0; padding-left: 0;">🕒 ประวัติเรียกคิวย้อนหลัง 5 ลำดับล่าสุด</div>
+        <ul class="history-list" id="history-list">
+            <li class="hist-empty">กำลังรอข้อมูลการเรียกคิว...</li>
+        </ul>
+    </div>
 </div>
-<div class="section-title">คิวล่าสุดแยกตามประเภทบริการ</div>
-<div class="grid">
-<div class="cat-card">
-<div class="cat-name">ประเภท 1</div>
-<div class="cat-val" id="q-cat1">-</div>
-</div>
-<div class="cat-card">
-<div class="cat-name">ประเภท 2</div>
-<div class="cat-val" id="q-cat2">-</div>
-</div>
-<div class="cat-card">
-<div class="cat-name">ประเภท 3</div>
-<div class="cat-val" id="q-cat3">-</div>
-</div>
-<div class="cat-card">
-<div class="cat-name">ประเภท 4</div>
-<div class="cat-val" id="q-cat4">-</div>
-</div>
-<div class="cat-card full">
-<div class="cat-name">ประเภท 5</div>
-<div class="cat-val" id="q-cat5">-</div>
-</div>
-</div>
-</div>
+
 <footer>
-
-    ข้อมูลอัปเดตทุกๆ 3 วินาที • กรุณารอเรียกคิวบริเวณจุดพักคอย
+    อัปเดตอัตโนมัติทุกวินาที • กรุณารอเรียกคิวบริเวณจุดพักคอย
 </footer>
+
 <script>
-
     const DATA_URL = "https://gist.githubusercontent.com/genonatdanai-png/c7387a2e824bc17bd768132f2f62c5c9/raw/queue_data.json";
+    let isFetching = false;
+    let latestDataCache = null;
+    let myQueueNum = localStorage.getItem("baac_my_queue") || "";
+    let lastAlertState = "";
+    let wakeLock = null;
+    let audioCtx = null;
 
-    function formatThai(text) {
+    let queueHistory = JSON.parse(localStorage.getItem("baac_queue_history") || "[]");
 
-        if (!text || text === "-") return "-";
+    // 1. ระบบเปิดหน้าจอค้างไว้ (Wake Lock API)
+    async function requestWakeLock() {
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                const badge = document.getElementById("wake-status");
+                badge.innerText = "☀️ เปิดจอค้างไว้แล้ว";
+                badge.classList.add("active");
+                wakeLock.addEventListener('release', () => {
+                    badge.innerText = "เปิดจอค้างไว้: อัตโนมัติ";
+                    badge.classList.remove("active");
+                });
+            } catch (err) {}
+        }
+    }
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") requestWakeLock();
+    });
+    document.body.addEventListener("click", () => {
+        if (!wakeLock) requestWakeLock();
+        initAudio();
+    }, { once: true });
 
-        return text.replace("Counter", "ช่อง");
-
+    // 2. ระบบเสียงแจ้งเตือน
+    function initAudio() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) audioCtx = new AudioContext();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    async function fetchQueueData() {
+    function playBeep(times = 2) {
+        initAudio();
+        if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+        if (!audioCtx) return;
+        for (let i = 0; i < times; i++) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime + i * 0.28);
+            gain.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.28);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.28 + 0.22);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + i * 0.28);
+            osc.stop(audioCtx.currentTime + i * 0.28 + 0.22);
+        }
+    }
 
-        try {
+    // 3. จัดการเลขคิวของฉัน
+    function saveMyQueue() {
+        initAudio();
+        requestWakeLock();
+        const val = document.getElementById("my-q-input").value.trim();
+        if (!/^\d{2,4}$/.test(val)) {
+            alert("กรุณากรอกหมายเลขคิวเป็นตัวเลข 2-4 หลัก (เช่น 2068)");
+            return;
+        }
+        myQueueNum = val;
+        lastAlertState = "";
+        localStorage.setItem("baac_my_queue", myQueueNum);
+        document.getElementById("btn-clear-q").style.display = "inline-block";
+        evaluateMyQueue();
+    }
 
-            const response = await fetch(DATA_URL + "?t=" + new Date().getTime(), { cache: "no-store" });
+    function clearMyQueue() {
+        myQueueNum = "";
+        lastAlertState = "";
+        localStorage.removeItem("baac_my_queue");
+        document.getElementById("my-q-input").value = "";
+        document.getElementById("btn-clear-q").style.display = "none";
+        document.getElementById("my-q-status").style.display = "none";
+    }
 
-            if (!response.ok) throw new Error("Network error");
-
-            const data = await response.json();
-
-            document.getElementById("q-latest").innerText = formatThai(data.Latest);
-
-            document.getElementById("q-cat1").innerText   = formatThai(data.Cat1);
-
-            document.getElementById("q-cat2").innerText   = formatThai(data.Cat2);
-
-            document.getElementById("q-cat3").innerText   = formatThai(data.Cat3);
-
-            document.getElementById("q-cat4").innerText   = formatThai(data.Cat4);
-
-            document.getElementById("q-cat5").innerText   = formatThai(data.Cat5);
-
-            const now = new Date().toLocaleTimeString('th-TH');
-
-            document.getElementById("last-sync").innerText = "อัปเดตล่าสุดเมื่อ: " + now + " น.";
-
-        } catch (err) {
-
-            document.getElementById("last-sync").innerText = "กำลังเชื่อมต่อข้อมูล...";
-
+    function evaluateMyQueue() {
+        const statusEl = document.getElementById("my-q-status");
+        if (!myQueueNum || !latestDataCache) {
+            statusEl.style.display = "none";
+            return;
         }
 
+        const catDigit = myQueueNum.charAt(0);
+        const catKey = "Cat" + catDigit;
+        const currentCatText = latestDataCache[catKey];
+
+        statusEl.style.display = "block";
+        statusEl.className = "my-status";
+
+        if (!currentCatText || currentCatText === "-") {
+            statusEl.classList.add("status-waiting");
+            statusEl.innerText = `คิวของคุณคือ ${myQueueNum} (ประเภท ${catDigit}) — กำลังรอเรียกคิวแรก`;
+            return;
+        }
+
+        const match = currentCatText.match(/^(\d+)/);
+        const counterMatch = currentCatText.match(/Counter\s*(\d+)/i);
+        const counterText = counterMatch ? `ที่ช่องบริการ ${counterMatch[1]}` : "";
+
+        if (!match) return;
+        const currentNum = parseInt(match[1], 10);
+        const myNum = parseInt(myQueueNum, 10);
+        const diff = myNum - currentNum;
+
+        if (diff > 2) {
+            statusEl.classList.add("status-waiting");
+            statusEl.innerText = `คิวของคุณ: ${myQueueNum} • เหลืออีก ${diff} คิว (ปัจจุบันคิว ${currentNum})`;
+        } else if (diff === 1 || diff === 2) {
+            statusEl.classList.add("status-near");
+            statusEl.innerText = `⚠️ ใกล้ถึงคิวของคุณแล้ว! (${myQueueNum}) เหลืออีก ${diff} คิว เตรียมตัวหน้าช่องบริการ`;
+            if (lastAlertState !== "near_" + diff) {
+                playBeep(2);
+                lastAlertState = "near_" + diff;
+            }
+        } else if (diff === 0) {
+            statusEl.classList.add("status-now");
+            statusEl.innerText = `🎉 ถึงคิวของคุณแล้ว! หมายเลข ${myQueueNum} เชิญ${counterText}`;
+            if (lastAlertState !== "now") {
+                playBeep(4);
+                lastAlertState = "now";
+            }
+        } else {
+            statusEl.classList.add("status-passed");
+            statusEl.innerText = `คิวของคุณ (${myQueueNum}) ผ่านไปแล้ว (ปัจจุบันเรียกถึงคิว ${currentNum})`;
+        }
+    }
+
+    // 4. ประวัติย้อนหลัง 5 คิว
+    function updateHistory(latestText) {
+        if (!latestText || latestText === "-") return;
+        const formatted = formatThai(latestText);
+        if (queueHistory.length === 0 || queueHistory[0].q !== formatted) {
+            const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            queueHistory.unshift({ q: formatted, time: timeStr + " น." });
+            if (queueHistory.length > 5) queueHistory = queueHistory.slice(0, 5);
+            localStorage.setItem("baac_queue_history", JSON.stringify(queueHistory));
+        }
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const listEl = document.getElementById("history-list");
+        if (queueHistory.length === 0) {
+            listEl.innerHTML = `<li class="hist-empty">ยังไม่มีประวัติการเรียกคิว</li>`;
+            return;
+        }
+        listEl.innerHTML = queueHistory.map((item, idx) => `
+            <li>
+                <span class="hist-q">${idx === 0 ? "🟢 " : "⚪ "}${item.q}</span>
+                <span class="hist-time">เรียกเมื่อ ${item.time}</span>
+            </li>
+        `).join("");
+    }
+
+    function formatThai(text) {
+        if (!text || text === "-") return "-";
+        return text.replace("Counter", "ช่อง");
+    }
+
+    if (myQueueNum) {
+        document.getElementById("my-q-input").value = myQueueNum;
+        document.getElementById("btn-clear-q").style.display = "inline-block";
+    }
+    renderHistory();
+
+    // 5. ดึงข้อมูลทุก 1 วินาที
+    async function fetchQueueData() {
+        if (isFetching) return;
+        isFetching = true;
+        try {
+            const response = await fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" });
+            if (!response.ok) throw new Error("Network error");
+            
+            const data = await response.json();
+            latestDataCache = data;
+
+            document.getElementById("q-latest").innerText = formatThai(data.Latest);
+            updateHistory(data.Latest);
+
+            document.getElementById("q-cat1").innerText = formatThai(data.Cat1);
+            document.getElementById("q-cat2").innerText = formatThai(data.Cat2);
+            document.getElementById("q-cat3").innerText = formatThai(data.Cat3);
+            document.getElementById("q-cat4").innerText = formatThai(data.Cat4);
+            document.getElementById("q-cat5").innerText = formatThai(data.Cat5);
+
+            evaluateMyQueue();
+
+            const now = new Date().toLocaleTimeString('th-TH');
+            document.getElementById("last-sync").innerText = "อัปเดตล่าสุดเมื่อ: " + now + " น.";
+        } catch (err) {
+            document.getElementById("last-sync").innerText = "กำลังเชื่อมต่อข้อมูล...";
+        } finally {
+            isFetching = false;
+        }
     }
 
     fetchQueueData();
-
-    setInterval(fetchQueueData, 3000);
+    setInterval(fetchQueueData, 1000);
 </script>
+
 </body>
 </html>
- 

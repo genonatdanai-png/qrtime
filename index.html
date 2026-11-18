@@ -325,7 +325,7 @@
         requestWakeLock();
         const val = document.getElementById("my-q-input").value.trim();
         if (!/^\d{2,4}$/.test(val)) {
-            alert("กรุณากรอกหมายเลขคิวเป็นตัวเลข 2-4 หลัก (เช่น 2068)");
+            alert("กรุณากรอกหมายเลขคิวเป็นตัวเลข 4 หลัก (เช่น 2068)");
             return;
         }
         myQueueNum = val;

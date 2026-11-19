@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบติดตามคิวบริการ - ธ.ก.ส.</title>
+    <title>ระบบติดตามคิวบริการ - ธ.ก.ส. สาขาห้วยยอด</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,63 +13,81 @@
             --text-dark: #1f2937;
             --bg-gray: #f3f4f6;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
-        body { background-color: var(--bg-gray); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+        body { background-color: var(--bg-gray); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; transition: background 0.3s ease; }
         
         header {
             background: linear-gradient(135deg, var(--baac-green) 0%, #004d26 100%);
             color: white;
-            padding: 18px 16px;
+            padding: 16px;
             text-align: center;
             border-bottom: 4px solid var(--baac-gold);
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; }
-        header p { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+        header h1 { font-size: 1.2rem; font-weight: 700; }
+        header p { font-size: 0.8rem; opacity: 0.9; margin-top: 2px; }
 
-        .container { max-width: 500px; width: 100%; margin: 0 auto; padding: 16px; flex: 1; }
+        .top-toolbar {
+            max-width: 500px; width: 100%; margin: 10px auto 0 auto; padding: 0 16px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;
+        }
+        .toolbar-group { display: flex; gap: 6px; align-items: center; }
+        .toolbar-select, .toolbar-btn {
+            background: white; border: 1px solid #d1d5db; padding: 4px 8px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; cursor: pointer;
+        }
 
-        /* กล่องกรอกเลขคิวของฉัน */
+        .container { max-width: 500px; width: 100%; margin: 0 auto; padding: 12px 16px 16px 16px; flex: 1; }
+
+        .status-banners { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .info-badge-row {
+            display: flex; justify-content: space-between; gap: 6px; font-size: 0.75rem; font-weight: 600;
+        }
+        .net-badge, .closing-badge {
+            background: white; padding: 6px 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 6px; flex: 1; text-align: center; justify-content: center;
+        }
+        .net-good { color: #15803d; }
+        .net-bad { color: #dc2626; }
+
+        body.giant-font .latest-number { font-size: 3.2rem !important; }
+        body.giant-font .cat-val { font-size: 1.5rem !important; }
+        body.giant-font .my-queue-box input { font-size: 1.4rem !important; }
+        body.giant-font .my-status { font-size: 1.1rem !important; }
+
         .my-queue-box {
             background: white;
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 14px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.06);
             border: 1.5px solid #d1d5db;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .my-queue-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--baac-green);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .wake-badge {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             background: #f3f4f6;
             color: #6b7280;
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 99px;
         }
-        .wake-badge.active {
-            background: #dcfce7;
-            color: #15803d;
-        }
-        .input-group {
-            display: flex;
-            gap: 8px;
-        }
+        .wake-badge.active { background: #dcfce7; color: #15803d; }
+        .input-group { display: flex; gap: 8px; }
         .input-group input {
             flex: 1;
-            padding: 10px 14px;
-            font-size: 1.1rem;
+            padding: 8px 12px;
+            font-size: 1rem;
             font-weight: 700;
             border: 2px solid #d1d5db;
-            border-radius: 10px;
+            border-radius: 8px;
             outline: none;
             text-align: center;
             letter-spacing: 2px;
@@ -77,131 +95,99 @@
         .input-group input:focus { border-color: var(--baac-green); }
         .btn-save {
             background: var(--baac-green);
-            color: white;
-            border: none;
-            padding: 0 18px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
+            color: white; border: none; padding: 0 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
         }
         .btn-clear {
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            padding: 0 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: none;
+            background: #fee2e2; color: #dc2626; border: none; padding: 0 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: none;
         }
         .my-status {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
-            display: none;
+            margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-align: center; display: none;
         }
         .status-waiting { background: var(--baac-light-green); color: var(--baac-green); }
-        .status-near { background: #fef3c7; color: #b45309; border: 1.5px solid #f59e0b; animation: pulseAlert 1.5s infinite; }
-        .status-now { background: #dcfce7; color: #15803d; border: 2px solid #22c55e; font-size: 1.05rem; animation: pulseAlert 0.8s infinite; }
+        .status-near { background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; animation: pulseAlert 1.5s infinite; }
+        .status-now { background: #dcfce7; color: #15803d; border: 2px solid #22c55e; animation: pulseAlert 0.8s infinite; }
         .status-passed { background: #fee2e2; color: #b91c1c; }
         @keyframes pulseAlert { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 
-        /* กล่องคิวล่าสุด */
         .latest-card {
             background: white;
-            border-radius: 16px;
-            padding: 20px 16px;
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 102, 51, 0.12);
+            box-shadow: 0 4px 12px rgba(0, 102, 51, 0.1);
             border: 2px solid var(--baac-green);
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
         .badge-live {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #fee2e2;
-            color: #dc2626;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 99px;
-            margin-bottom: 8px;
+            display: inline-flex; align-items: center; gap: 6px; background: #fee2e2; color: #dc2626; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 99px; margin-bottom: 6px;
         }
-        .dot { width: 8px; height: 8px; background: #dc2626; border-radius: 50%; animation: blink 1s infinite; }
+        .dot { width: 7px; height: 7px; background: #dc2626; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
-        .latest-label { font-size: 0.95rem; color: #4b5563; font-weight: 600; }
-        .latest-number {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: var(--baac-green);
-            margin: 6px 0;
-            line-height: 1.2;
-        }
-        .update-time { font-size: 0.75rem; color: #6b7280; font-variant-numeric: tabular-nums; margin-top: 4px; }
+        .latest-label { font-size: 0.9rem; color: #4b5563; font-weight: 600; }
+        .latest-number { font-size: 2.2rem; font-weight: 700; color: var(--baac-green); margin: 4px 0; line-height: 1.2; }
+        .update-time { font-size: 0.7rem; color: #6b7280; margin-top: 2px; }
 
-        /* การ์ดแยกประเภท */
-        .section-title { font-size: 0.95rem; font-weight: 600; color: #374151; margin-bottom: 10px; padding-left: 4px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+        .section-title { font-size: 0.9rem; font-weight: 600; color: #374151; margin-bottom: 8px; padding-left: 2px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
         .cat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 12px 14px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--baac-gold);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background: white; border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); border-left: 4px solid var(--baac-gold); display: flex; flex-direction: column; justify-content: space-between;
         }
         .cat-card.full { grid-column: span 2; }
-        .cat-name { font-size: 0.8rem; color: #6b7280; font-weight: 600; margin-bottom: 4px; }
-        .cat-val { font-size: 1.15rem; font-weight: 700; color: var(--text-dark); }
+        .cat-name { font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 2px; }
+        .cat-val { font-size: 1.05rem; font-weight: 700; color: var(--text-dark); }
 
-        /* ประวัติย้อนหลัง 5 คิว */
-        .history-card {
-            background: white;
-            border-radius: 14px;
-            padding: 14px 16px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        .history-list {
-            list-style: none;
-            margin-top: 8px;
-        }
+        .history-card { background: white; border-radius: 12px; padding: 12px 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); }
+        .history-list { list-style: none; margin-top: 6px; }
         .history-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 0.88rem;
+            display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.82rem;
         }
         .history-list li:last-child { border-bottom: none; padding-bottom: 0; }
         .hist-q { font-weight: 700; color: var(--text-dark); }
-        .hist-time { font-size: 0.75rem; color: #9ca3af; }
-        .hist-empty { font-size: 0.85rem; color: #9ca3af; text-align: center; padding: 10px 0; }
+        .hist-time { font-size: 0.7rem; color: #9ca3af; }
+        .hist-empty { font-size: 0.8rem; color: #9ca3af; text-align: center; padding: 8px 0; }
 
-        footer { text-align: center; padding: 14px; font-size: 0.75rem; color: #6b7280; }
+        footer { text-align: center; padding: 12px; font-size: 0.7rem; color: #6b7280; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.) สาขาห้วยยอด</h1>
-    <p>ระบบตรวจสอบคิวให้บริการออนไลน์ (Real-time)</p>
+    <h1 id="txt-title">ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร สาขาห้วยยอด</h1>
+    <p id="txt-subtitle">ระบบตรวจสอบคิวให้บริการออนไลน์ (Real-time)</p>
 </header>
 
+<div class="top-toolbar">
+    <div class="toolbar-group">
+        <select class="toolbar-select" id="lang-select" onchange="changeLanguage(this.value)">
+            <option value="th">🇹🇭 ไทย</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ms">🇲🇾 Melayu</option>
+            <option value="jawi">🌙 بهاس ملايو (Jawi)</option>
+        </select>
+    </div>
+    <div class="toolbar-group">
+        <button class="toolbar-btn" onclick="toggleGiantFont()" id="btn-font-toggle">🔠 ฟอนต์ใหญ่</button>
+    </div>
+</div>
+
 <div class="container">
-    <!-- ระบบกรอกเลขคิวของฉัน -->
+    <div class="status-banners">
+        <div class="info-badge-row">
+            <div class="net-badge" id="net-status-badge" style="width: 100%;">
+                <span id="net-dot">🟢</span> <span id="txt-net">สัญญานเน็ตดี</span>
+            </div>
+        </div>
+        <div class="info-badge-row">
+            <div class="closing-badge" id="closing-badge" style="width: 100%;">
+                ⏳ <span id="txt-closing">เวลาปิดทำการ: กำลังคำนวณ...</span>
+            </div>
+        </div>
+    </div>
+
     <div class="my-queue-box">
         <div class="my-queue-title">
-            <span>🔔 แจ้งเตือนคิวของฉัน</span>
+            <span id="txt-myq-header">🔔 แจ้งเตือนคิวของฉัน</span>
             <span class="wake-badge" id="wake-status">เปิดจอค้างไว้: อัตโนมัติ</span>
         </div>
         <div class="input-group">
@@ -212,42 +198,39 @@
         <div class="my-status" id="my-q-status"></div>
     </div>
 
-    <!-- คิวล่าสุด -->
     <div class="latest-card">
-        <div class="badge-live"><span class="dot"></span> อัปเดตเรียลไทม์ (ทุก 1 นาที)</div>
-        <div class="latest-label">หมายเลขคิวล่าสุดที่เรียก</div>
+        <div class="badge-live"><span class="dot"></span> <span id="txt-live-badge">อัปเดตเรียลไทม์ (ทุกวินาที)</span></div>
+        <div class="latest-label" id="txt-latest-label">หมายเลขคิวล่าสุดที่เรียก</div>
         <div class="latest-number" id="q-latest">กำลังโหลด...</div>
         <div class="update-time" id="last-sync">รอการเชื่อมต่อข้อมูล</div>
     </div>
 
-    <!-- คิวแยกประเภท -->
-    <div class="section-title">คิวล่าสุดแยกตามประเภทบริการ</div>
+    <div class="section-title" id="txt-grid-title">คิวล่าสุดแยกตามประเภทบริการ</div>
     <div class="grid">
         <div class="cat-card">
-            <div class="cat-name">ประเภท 1</div>
+            <div class="cat-name" id="cat-name-1">ประเภท 1</div>
             <div class="cat-val" id="q-cat1">-</div>
         </div>
         <div class="cat-card">
-            <div class="cat-name">ประเภท 2</div>
+            <div class="cat-name" id="cat-name-2">ประเภท 2</div>
             <div class="cat-val" id="q-cat2">-</div>
         </div>
         <div class="cat-card">
-            <div class="cat-name">ประเภท 3</div>
+            <div class="cat-name" id="cat-name-3">ประเภท 3</div>
             <div class="cat-val" id="q-cat3">-</div>
         </div>
         <div class="cat-card">
-            <div class="cat-name">ประเภท 4</div>
+            <div class="cat-name" id="cat-name-4">ประเภท 4</div>
             <div class="cat-val" id="q-cat4">-</div>
         </div>
         <div class="cat-card full">
-            <div class="cat-name">ประเภท 5</div>
+            <div class="cat-name" id="cat-name-5">ประเภท 5</div>
             <div class="cat-val" id="q-cat5">-</div>
         </div>
     </div>
 
-    <!-- ประวัติการเรียกคิวย้อนหลัง 5 คิว -->
     <div class="history-card">
-        <div class="section-title" style="margin-bottom: 0; padding-left: 0;">🕒 ประวัติเรียกคิวย้อนหลัง 5 ลำดับล่าสุด</div>
+        <div class="section-title" id="txt-history-title" style="margin-bottom: 0; padding-left: 0;">🕒 ประวัติเรียกคิวย้อนหลัง 5 ลำดับล่าสุด</div>
         <ul class="history-list" id="history-list">
             <li class="hist-empty">กำลังรอข้อมูลการเรียกคิว...</li>
         </ul>
@@ -255,7 +238,7 @@
 </div>
 
 <footer>
-    อัปเดตอัตโนมัติทุกวินาที • กรุณารอเรียกคิวบริเวณจุดพักคอย
+    <span id="txt-footer">อัปเดตอัตโนมัติทุกวินาที • กรุณารอเรียกคิวบริเวณจุดพักคอย</span>
 </footer>
 
 <script>
@@ -266,10 +249,129 @@
     let lastAlertState = "";
     let wakeLock = null;
     let audioCtx = null;
+    let currentLang = localStorage.getItem("baac_lang") || "th";
+    let isGiantFont = localStorage.getItem("baac_giant_font") === "true";
 
     let queueHistory = JSON.parse(localStorage.getItem("baac_queue_history") || "[]");
 
-    // 1. ระบบเปิดหน้าจอค้างไว้ (Wake Lock API)
+    document.getElementById("lang-select").value = currentLang;
+    if (isGiantFont) {
+        document.body.classList.add("giant-font");
+        document.getElementById("btn-font-toggle").innerText = "🔠 ฟอนต์ปกติ";
+    }
+
+    const translations = {
+        th: {
+            title: "ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร สาขาห้วยยอด",
+            subtitle: "ระบบตรวจสอบคิวให้บริการออนไลน์ (Real-time)",
+            myqHeader: "🔔 แจ้งเตือนคิวของฉัน",
+            inputPh: "พิมพ์เลขคิว เช่น 2068",
+            btnSave: "บันทึก",
+            btnClear: "ยกเลิก",
+            liveBadge: "อัปเดตเรียลไทม์ (ทุกวินาที)",
+            latestLabel: "หมายเลขคิวล่าสุดที่เรียก",
+            gridTitle: "คิวล่าสุดแยกตามประเภทบริการ",
+            historyTitle: "🕒 ประวัติเรียกคิวย้อนหลัง 5 ลำดับล่าสุด",
+            footer: "อัปเดตอัตโนมัติทุกวินาที • กรุณารอเรียกคิวบริเวณจุดพักคอย",
+            cat1: "ประเภท 1", cat2: "ประเภท 2", cat3: "ประเภท 3", cat4: "ประเภท 4", cat5: "ประเภท 5",
+            netGood: "สัญญาณเน็ตดี", netBad: "สัญญาณขัดข้อง",
+            closingNormal: "เวลาปิดทำการ: 15:30 น. (เปิดปกติ)", closingSoon: "ใกล้เวลาปิดทำการ (เหลืออีก ", closingClosed: "ธนาคารปิดทำการแล้วสำหรับวันนี้"
+        },
+        en: {
+            title: "BAAC Huai Yot Branch",
+            subtitle: "Real-time Queue Monitoring System",
+            myqHeader: "🔔 My Queue Alert",
+            inputPh: "Enter queue e.g. 2068",
+            btnSave: "Save",
+            btnClear: "Cancel",
+            liveBadge: "Real-time Update (Every sec)",
+            latestLabel: "Latest Called Queue Number",
+            gridTitle: "Latest Queue by Service Category",
+            historyTitle: "🕒 Last 5 Called Queues History",
+            footer: "Auto-update every second • Please wait in the lounge area",
+            cat1: "Category 1", cat2: "Category 2", cat3: "Category 3", cat4: "Category 4", cat5: "Category 5",
+            netGood: "Network Stable", netBad: "Network Unstable",
+            closingNormal: "Closing Time: 3:30 PM (Open)", closingSoon: "Closing soon (Remaining ", closingClosed: "Bank is closed for today"
+        },
+        ms: {
+            title: "Bank Pertanian Thailand (BAAC) Huai Yot",
+            subtitle: "Sistem Pemantauan Barisan Masa Nyata",
+            myqHeader: "🔔 Amaran Barisan Saya",
+            inputPh: "Masukkan nombor cth. 2068",
+            btnSave: "Simpan",
+            btnClear: "Batal",
+            liveBadge: "Kemas Kini Masa Nyata",
+            latestLabel: "Nombor Barisan Terkini",
+            gridTitle: "Barisan Terkini Mengikut Kategori",
+            historyTitle: "🕒 5 Sejarah Barisan Terakhir",
+            footer: "Kemas kini automatik • Sila tunggu di ruang menunggu",
+            cat1: "Kategori 1", cat2: "Kategori 2", cat3: "Kategori 3", cat4: "Kategori 4", cat5: "Kategori 5",
+            netGood: "Rangkaian Baik", netBad: "Rangkaian Lemah",
+            closingNormal: "Waktu Tutup: 3:30 PTG (Buka)", closingSoon: "Hampir ditutup (Baki ", closingClosed: "Bank telah ditutup hari ini"
+        },
+        jawi: {
+            title: "بڠک ڤرتانين تاءيلند (BAAC) اوبايه هوأي يو",
+            subtitle: "سستم ڤمانتوان باريسن ماس حقيقة",
+            myqHeader: "🔔 ڤڠينڬتن باريسن ساي",
+            inputPh: "ماسقکن نومبور چونتوه 2068",
+            btnSave: "سيمڤن",
+            btnClear: "باتل",
+            liveBadge: "کماس کيني ماس حقيقة",
+            latestLabel: "نومبور باريسن تركين",
+            gridTitle: "باريسن تركين مڠيكوت كاتڬوري",
+            historyTitle: "🕒 5 سجاره باريسن تراکير",
+            footer: "کماس کيني اوتوماتيک • سيل دودوق دروڠ مونوڠڬو",
+            cat1: "کاتڬوري 1", cat2: "کاتڬوري 2", cat3: "کاتڬوري 3", cat4: "کاتڬوري 4", cat5: "کاتڬوري 5",
+            netGood: "رڠکاين باءيك", netBad: "رڠکاين ليمه",
+            closingNormal: "صکت وقتو توبوه: 3:30 ڤتڠ (بوک)", closingSoon: "همڤير دتوبوه (باقي ", closingClosed: "بڠک تله دتوبوه هاري اين"
+        }
+    };
+
+    function changeLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem("baac_lang", lang);
+        applyTranslations();
+    }
+
+    function applyTranslations() {
+        const t = translations[currentLang];
+        document.getElementById("txt-title").innerText = t.title;
+        document.getElementById("txt-subtitle").innerText = t.subtitle;
+        document.getElementById("txt-myq-header").innerText = t.myqHeader;
+        document.getElementById("my-q-input").placeholder = t.inputPh;
+        document.getElementById("btn-save-q").innerText = t.btnSave;
+        document.getElementById("btn-clear-q").innerText = t.btnClear;
+        document.getElementById("txt-live-badge").innerText = t.liveBadge;
+        document.getElementById("txt-latest-label").innerText = t.latestLabel;
+        document.getElementById("txt-grid-title").innerText = t.gridTitle;
+        document.getElementById("txt-history-title").innerText = t.historyTitle;
+        document.getElementById("txt-footer").innerText = t.footer;
+
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById("cat-name-" + i).innerText = t["cat1".replace("1", i)];
+        }
+    }
+    applyTranslations();
+
+    function toggleGiantFont() {
+        isGiantFont = !isGiantFont;
+        localStorage.setItem("baac_giant_font", isGiantFont);
+        if (isGiantFont) {
+            document.body.classList.add("giant-font");
+            document.getElementById("btn-font-toggle").innerText = "🔠 ฟอนต์ปกติ";
+        } else {
+            document.body.classList.remove("giant-font");
+            document.getElementById("btn-font-toggle").innerText = "🔠 ฟอนต์ใหญ่";
+        }
+    }
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            requestWakeLock();
+            fetchQueueData();
+        }
+    });
+
     async function requestWakeLock() {
         if ('wakeLock' in navigator) {
             try {
@@ -277,22 +379,15 @@
                 const badge = document.getElementById("wake-status");
                 badge.innerText = "☀️ เปิดจอค้างไว้แล้ว";
                 badge.classList.add("active");
-                wakeLock.addEventListener('release', () => {
-                    badge.innerText = "เปิดจอค้างไว้: อัตโนมัติ";
-                    badge.classList.remove("active");
-                });
             } catch (err) {}
         }
     }
-    document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") requestWakeLock();
-    });
+
     document.body.addEventListener("click", () => {
         if (!wakeLock) requestWakeLock();
         initAudio();
     }, { once: true });
 
-    // 2. ระบบเสียงแจ้งเตือน
     function initAudio() {
         if (!audioCtx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -301,31 +396,109 @@
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    function playBeep(times = 2) {
+    function playAdvancedAlert(type) {
         initAudio();
-        if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+        if (navigator.vibrate) {
+            if (type === 'near') {
+                navigator.vibrate([200, 100, 200]);
+            } else if (type === 'now') {
+                navigator.vibrate([400, 200, 400, 200, 600]);
+            }
+        }
+        playBeep(type === 'now' ? 4 : 2);
+    }
+
+    function playBeep(times = 2) {
         if (!audioCtx) return;
         for (let i = 0; i < times; i++) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = "sine";
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime + i * 0.28);
-            gain.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.28);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.28 + 0.22);
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime + i * 0.25);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + i * 0.25);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.25 + 0.2);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            osc.start(audioCtx.currentTime + i * 0.28);
-            osc.stop(audioCtx.currentTime + i * 0.28 + 0.22);
+            osc.start(audioCtx.currentTime + i * 0.25);
+            osc.stop(audioCtx.currentTime + i * 0.25 + 0.2);
         }
     }
 
-    // 3. จัดการเลขคิวของฉัน
+    async function checkNetworkSpeed() {
+        const netBadge = document.getElementById("net-status-badge");
+        const netDot = document.getElementById("net-dot");
+        const txtNet = document.getElementById("txt-net");
+        const t = translations[currentLang];
+
+        if (!navigator.onLine) {
+            netBadge.className = "net-badge net-bad";
+            netDot.innerText = "🔴";
+            txtNet.innerText = currentLang === 'en' ? "Offline" : currentLang === 'ms' ? "Luar Talian" : currentLang === 'jawi' ? "لوار تاليان" : "ออฟไลน์ / เน็ตหลุด";
+            return;
+        }
+
+        const startTime = Date.now();
+        try {
+            await fetch(DATA_URL + "?ping=" + startTime, { method: 'HEAD', cache: 'no-store' });
+            const duration = Date.now() - startTime;
+            if (duration < 600) {
+                netBadge.className = "net-badge net-good";
+                netDot.innerText = "🟢";
+                txtNet.innerText = t.netGood;
+            } else {
+                netBadge.className = "net-badge";
+                netDot.innerText = "🟡";
+                txtNet.innerText = currentLang === 'en' ? "Moderate Network" : currentLang === 'ms' ? "Sederhana" : currentLang === 'jawi' ? "سدرهان" : "สัญญาณปานกลาง";
+            }
+        } catch (err) {
+            netBadge.className = "net-badge net-bad";
+            netDot.innerText = "🔴";
+            txtNet.innerText = t.netBad;
+        }
+    }
+    setInterval(checkNetworkSpeed, 10000);
+
+    function updateClosingCountdown() {
+        const now = new Date();
+        const closeHour = 15;
+        const closeMinute = 30;
+        
+        const closeTime = new Date();
+        closeTime.setHours(closeHour, closeMinute, 0, 0);
+
+        const diffMs = closeTime - now;
+        const badge = document.getElementById("closing-badge");
+        const txtClosing = document.getElementById("txt-closing");
+        const t = translations[currentLang];
+
+        if (diffMs > 0) {
+            const totalSec = Math.floor(diffMs / 1000);
+            const hrs = Math.floor(totalSec / 3600);
+            const mins = Math.floor((totalSec % 3600) / 60);
+
+            if (hrs === 0 && mins <= 60) {
+                badge.style.background = "#fef3c7";
+                badge.style.color = "#b45309";
+                txtClosing.innerText = `${t.closingSoon}${mins} นาที)`;
+            } else {
+                badge.style.background = "white";
+                badge.style.color = "#1f2937";
+                txtClosing.innerText = `${t.closingNormal} (เหลือ ${hrs}ชม. ${mins}น.)`;
+            }
+        } else {
+            badge.style.background = "#fee2e2";
+            badge.style.color = "#dc2626";
+            txtClosing.innerText = t.closingClosed;
+        }
+    }
+    setInterval(updateClosingCountdown, 1000);
+
     function saveMyQueue() {
         initAudio();
         requestWakeLock();
         const val = document.getElementById("my-q-input").value.trim();
         if (!/^\d{2,4}$/.test(val)) {
-            alert("กรุณากรอกหมายเลขคิวเป็นตัวเลข 4 หลัก (เช่น 2068)");
+            alert(currentLang === 'en' ? "Please enter 2-4 digits queue number" : currentLang === 'ms' ? "Sila masukkan 2-4 digit" : currentLang === 'jawi' ? "سيل ماسقکن 2-4 ديڬيت" : "กรุณากรอกหมายเลขคิวเป็นตัวเลข 2-4 หลัก (เช่น 2068)");
             return;
         }
         myQueueNum = val;
@@ -360,7 +533,7 @@
 
         if (!currentCatText || currentCatText === "-") {
             statusEl.classList.add("status-waiting");
-            statusEl.innerText = `คิวของคุณคือ ${myQueueNum} (ประเภท ${catDigit}) — กำลังรอเรียกคิวแรก`;
+            statusEl.innerText = `คิวของคุณ ${myQueueNum} (ประเภท ${catDigit}) — กำลังรอเรียก`;
             return;
         }
 
@@ -378,25 +551,24 @@
             statusEl.innerText = `คิวของคุณ: ${myQueueNum} • เหลืออีก ${diff} คิว (ปัจจุบันคิว ${currentNum})`;
         } else if (diff === 1 || diff === 2) {
             statusEl.classList.add("status-near");
-            statusEl.innerText = `⚠️ ใกล้ถึงคิวของคุณแล้ว! (${myQueueNum}) เหลืออีก ${diff} คิว เตรียมตัวหน้าช่องบริการ`;
+            statusEl.innerText = `⚠️ ใกล้ถึงคิวของคุณแล้ว! (${myQueueNum}) เหลืออีก ${diff} คิว เตรียมตัวหน้าช่อง`;
             if (lastAlertState !== "near_" + diff) {
-                playBeep(2);
+                playAdvancedAlert('near');
                 lastAlertState = "near_" + diff;
             }
         } else if (diff === 0) {
             statusEl.classList.add("status-now");
             statusEl.innerText = `🎉 ถึงคิวของคุณแล้ว! หมายเลข ${myQueueNum} เชิญ${counterText}`;
             if (lastAlertState !== "now") {
-                playBeep(4);
+                playAdvancedAlert('now');
                 lastAlertState = "now";
             }
         } else {
             statusEl.classList.add("status-passed");
-            statusEl.innerText = `คิวของคุณ (${myQueueNum}) ผ่านไปแล้ว (ปัจจุบันเรียกถึงคิว ${currentNum})`;
+            statusEl.innerText = `คิวของคุณ (${myQueueNum}) ผ่านไปแล้ว (ปัจจุบันคิว ${currentNum})`;
         }
     }
 
-    // 4. ประวัติย้อนหลัง 5 คิว
     function updateHistory(latestText) {
         if (!latestText || latestText === "-") return;
         const formatted = formatThai(latestText);
@@ -425,7 +597,7 @@
 
     function formatThai(text) {
         if (!text || text === "-") return "-";
-        return text.replace("Counter", "ช่อง");
+        return text.replace("Counter", currentLang === 'en' ? "Counter" : currentLang === 'ms' ? "Kaunter" : currentLang === 'jawi' ? "کاونتر" : "ช่อง");
     }
 
     if (myQueueNum) {
@@ -434,7 +606,6 @@
     }
     renderHistory();
 
-    // 5. ดึงข้อมูลทุก 1 วินาที
     async function fetchQueueData() {
         if (isFetching) return;
         isFetching = true;
@@ -448,18 +619,19 @@
             document.getElementById("q-latest").innerText = formatThai(data.Latest);
             updateHistory(data.Latest);
 
-            document.getElementById("q-cat1").innerText = formatThai(data.Cat1);
-            document.getElementById("q-cat2").innerText = formatThai(data.Cat2);
-            document.getElementById("q-cat3").innerText = formatThai(data.Cat3);
-            document.getElementById("q-cat4").innerText = formatThai(data.Cat4);
-            document.getElementById("q-cat5").innerText = formatThai(data.Cat5);
+            const cats = ["Cat1", "Cat2", "Cat3", "Cat4", "Cat5"];
+            cats.forEach((key, idx) => {
+                const num = idx + 1;
+                const val = data[key] || "-";
+                document.getElementById("q-cat" + num).innerText = formatThai(val);
+            });
 
             evaluateMyQueue();
 
             const now = new Date().toLocaleTimeString('th-TH');
-            document.getElementById("last-sync").innerText = "อัปเดตล่าสุดเมื่อ: " + now + " น.";
+            document.getElementById("last-sync").innerText = (currentLang === 'en' ? "Last update: " : currentLang === 'ms' ? "Kemas kini: " : currentLang === 'jawi' ? "کماس کيني: " : "อัปเดตล่าสุดเมื่อ: ") + now + " น.";
         } catch (err) {
-            document.getElementById("last-sync").innerText = "กำลังเชื่อมต่อข้อมูล...";
+            document.getElementById("last-sync").innerText = currentLang === 'en' ? "Connecting..." : currentLang === 'ms' ? "Menyambung..." : currentLang === 'jawi' ? "منSambوڠ..." : "กำลังเชื่อมต่อข้อมูล...";
         } finally {
             isFetching = false;
         }
